@@ -14,8 +14,11 @@ def PermListUpdater():
     with open('./PermList/UpdatePermList.txt') as updateFile:
         updatedata = updateFile.read()
         updateList = updatedata.split('\n')
+    with open('./PermList/UpdatePermList2.txt') as updateFile2:
+        updatedata2 = updateFile2.read()
+        updateList2 = updatedata2.split('\n')
 
-    updateList.pop()
+    updateList2.pop()
 
     with open('./PermList/DefaultPermList.txt') as defaultFile:
         defaultdata = defaultFile.read()
@@ -23,7 +26,9 @@ def PermListUpdater():
 
     defaultList.pop()
 
-    newList=defaultList + list(set(updateList) - set(defaultList))
+    preprocess=updateList+list(set(updateList) - set(updateList2))
+    newList=defaultList+list(set(preprocess) - set(defaultList))
+
     with open('./PermList/UpdatedPermList.txt', 'w') as dumpFile:
         for i in newList:
             dumpFile.write(i+'\n')
@@ -45,6 +50,10 @@ def CSVFormatter():
         writer.writerow(csv_row_data)
 
 def Extract(datastoredir):
+    if datastoredir == "./MalwareAPK":
+        TYPE=1
+    elif datastoredir =="./BenignAPK":
+        TYPE=0
     Flag=1
 
     print(datastoredir)
@@ -72,7 +81,7 @@ def Extract(datastoredir):
 
             print(ApkName + " --- [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "]")
             print("starting unpack")
-            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " 2 >/dev/null")
+            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )#+ " >/dev/null"
             print("Unpacking Done !!")
 
             # UNPACK DIR LOCATION SET
@@ -103,9 +112,15 @@ def Extract(datastoredir):
 
         permList = list(permCollection)
 
-        with open("./PermList/UpdatePermList.txt", 'w') as file:
-            for i in permList:
-                file.write(i + '\n')
+        if TYPE == int(1):
+            with open("./PermList/UpdatePermList.txt", 'w') as file:
+                for i in permList:
+                    file.write(i + '\n')
+        elif TYPE == int(0):
+
+            with open("./PermList/UpdatePermList2.txt", 'w') as file:
+                for i in permList:
+                    file.write(i + '\n')
 
 def Bagger(datastoredir):
     if datastoredir == "./MalwareAPK":
@@ -115,71 +130,80 @@ def Bagger(datastoredir):
     permCollection = set()
     TimeStamp = str(time.time())
     # print(TimeStamp)
-
+    Flag=1
 
     # JDAX LOCATION SET
     Jdax = "./Modules/jadx/bin/jadx"
     TargetApkPath = datastoredir+"/"
     ApkNameList = os.listdir(datastoredir)
-    ApkNameList.sort()
-    TotalApks = len(ApkNameList)
-    CurrentApk = 0
-    #get field names
-    fieldnames=[]
-    with open('data.csv') as csv_file:
-        CSVREADER=csv.DictReader(csv_file)
-        fieldnames=CSVREADER.fieldnames
+    if len(ApkNameList) == int(0):
+        Flag=0
 
-    csv_master_dict=dict.fromkeys(fieldnames,0)
+    if Flag != int(0):
+        ApkNameList.sort()
+        TotalApks = len(ApkNameList)
+        CurrentApk = 0
+        #get field names
+        fieldnames=[]
+        with open('data.csv') as csv_file:
+            CSVREADER=csv.DictReader(csv_file)
+            fieldnames=CSVREADER.fieldnames
+
+        csv_master_dict=dict.fromkeys(fieldnames,0)
 
 
-    for ApkName in ApkNameList:
-        TargetApk = TargetApkPath + ApkName
+        for ApkName in ApkNameList:
+            TargetApk = TargetApkPath + ApkName
 
-        print(ApkName + " \n--- [" + str(CurrentApk + 1) + ' / ' + str(TotalApks) + "]",end=' ')
-        print("\tStarting unpack...",end=' ')
-        sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null")
-        print("\tUnpacking Done !!",end=' ')
+            print(ApkName + " \n--- [" + str(CurrentApk + 1) + ' / ' + str(TotalApks) + "]",end=' ')
+            print("\tStarting unpack...",end=' ')
+            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null") #+ " >/dev/null"
+            print("\tUnpacking Done !!",end=' ')
 
-        # UNPACK DIR LOCATION SET
-        UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
-        MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
+            # UNPACK DIR LOCATION SET
+            UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
+            MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
 
-        try:
-            root = ET.parse(MainfestPath).getroot()
-            permissions = root.findall("uses-permission")
-            csv_master_dict=dict.fromkeys(fieldnames,0)
-            csv_master_dict['NAME']=ApkName
-            csv_master_dict['CLASS']=TYPE
-            # 1 for malware
-            # 0 for safe/ benign
-            for perm in permissions:
-                for att in perm.attrib:
-                    permelement = perm.attrib[att]
-                    csv_master_dict[permelement]=1
-            sys("rm -f -R " + UnpackedDir)
-            print("\tUpdating dataset...", end=' ')
-            with open('data.csv', 'a') as csv_dump:
-                CSVwriter = csv.DictWriter(csv_dump, fieldnames=fieldnames)
-                CSVwriter.writerow(csv_master_dict)
-            print("\tDataset Updated.")
-        except Exception:
-            print("EERRRROORR")
-            pass
-        CurrentApk += 1
+            try:
+                root = ET.parse(MainfestPath).getroot()
+                permissions = root.findall("uses-permission")
+                csv_master_dict=dict.fromkeys(fieldnames,0)
+                csv_master_dict['NAME']=ApkName
+                csv_master_dict['CLASS']=TYPE
+                # 1 for malware
+                # 0 for safe/ benign
+                for perm in permissions:
+                    for att in perm.attrib:
+                        permelement = perm.attrib[att]
+                        csv_master_dict[permelement]=1
+                sys("rm -f -R " + UnpackedDir)
+                print("\tUpdating dataset...", end=' ')
+                with open('data.csv', 'a') as csv_dump:
+                    CSVwriter = csv.DictWriter(csv_dump, fieldnames=fieldnames)
+                    CSVwriter.writerow(csv_master_dict)
+                print("\tDataset Updated.")
+            except Exception:
+                print("EERRRROORR")
+                pass
+            CurrentApk += 1
 
 
 
 def Main():
+    sys("rm './PermList/UpdatePermList.txt' './PermList/UpdatePermList2.txt' './PermList/UpdatedPermList.txt'")
+    sys("touch './PermList/UpdatePermList2.txt' && touch './PermList/UpdatePermList.txt' ")
     Malware_Directory_Name="./MalwareAPK"
     Benign_Directory_Name="./BenignAPK"
 
     Extract(Benign_Directory_Name)
+    Extract(Malware_Directory_Name)
 
     PermListUpdater()
     CSVFormatter()
 
     Bagger(Benign_Directory_Name)
+    Bagger(Malware_Directory_Name)
+
 
 
 

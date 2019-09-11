@@ -322,8 +322,7 @@ android.permission.WRITE_SMS
 android.permission.WRITE_SOCIAL_STREAM
 android.permission.WRITE_SYNC_SETTINGS
 android.permission.WRITE_USER_DICTIONARY
-android.permission.READ_PHONE_STATE
-android.permission.ACCESS_FINE_LOCATION
+
 android.permission.WRITE_EXTERNAL_STORAGE
-android.permission.READ_EXTERNAL_STORAGE
-android.permission.CALL_PHONE
+android.permission.ACCESS_COARSE_LOCATION
+android.permission.ACCESS_FINE_LOCATION
