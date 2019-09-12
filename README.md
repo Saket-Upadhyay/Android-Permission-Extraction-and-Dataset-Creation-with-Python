@@ -58,4 +58,8 @@ The above code will remove **NAME** column and then store **FEATURE_MATRIX** (fr
 More
 </H2>
 - This is used in PACE project.
-- This can be used to Reproduce Work in 
+<br>
+- This can be used to Reproduce the work in
+
+
+[Kumar, Ajit, K. S. Kuppusamy, and G. Aghila. "FAMOUS: Forensic Analysis of MObile devices Using Scoring of application permissions." Future Generation Computer Systems 83 (2018): 158-172.](https://www.sciencedirect.com/science/article/pii/S0167739X17323257)
