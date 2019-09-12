@@ -14,24 +14,18 @@ def PermListUpdater():
     with open('./PermList/UpdatePermList.txt') as updateFile:
         updatedata = updateFile.read()
         updateList = updatedata.split('\n')
-    with open('./PermList/UpdatePermList2.txt') as updateFile2:
-        updatedata2 = updateFile2.read()
-        updateList2 = updatedata2.split('\n')
-
-    updateList2.pop()
-
+    updateList.pop()
     with open('./PermList/DefaultPermList.txt') as defaultFile:
         defaultdata = defaultFile.read()
         defaultList = defaultdata.split('\n')
-
     defaultList.pop()
 
-    preprocess=updateList+list(set(updateList) - set(updateList2))
-    newList=defaultList+list(set(preprocess) - set(defaultList))
+    newList=defaultList+list(set(updateList) - set(defaultList))
 
     with open('./PermList/UpdatedPermList.txt', 'w') as dumpFile:
         for i in newList:
             dumpFile.write(i+'\n')
+
 
 def CSVFormatter():
     test_file=open("./PermList/UpdatedPermList.txt")
@@ -49,78 +43,76 @@ def CSVFormatter():
         writer=csv.writer(csv_file)
         writer.writerow(csv_row_data)
 
-def Extract(datastoredir):
-    if datastoredir == "./MalwareAPK":
-        TYPE=1
-    elif datastoredir =="./BenignAPK":
-        TYPE=0
-    Flag=1
-
-    print(datastoredir)
-
+def Extract():
+    DIRTYPE=["./MalwareAPK","./BenignAPK"]
     permCollection = set()
-    TimeStamp = str(time.time())
-    # print(TimeStamp)
-    # JDAX LOCATION SET
-    Jdax = "./Modules/jadx/bin/jadx"
-    TargetApkPath = datastoredir
-    ApkNameList = os.listdir(datastoredir)
-    if len(ApkNameList) == int(0):
-        Flag=0
 
-    if Flag != int(0):
-        ApkNameList.sort()
-        TargetApkPath = datastoredir+"/"
-        CurrentApk = 0
 
-        print(TargetApkPath)
-        print(ApkNameList)
-        print(TargetApkPath)
-        for ApkName in ApkNameList:
-            TargetApk = TargetApkPath + ApkName
+    for datastoredir in DIRTYPE:
+        Flag=1
+        
+        TimeStamp = str(time.time())
+        # print(TimeStamp)
+        # JDAX LOCATION SET
+        Jdax = "./Modules/jadx/bin/jadx"
+        TargetApkPath = datastoredir
+        ApkNameList = os.listdir(datastoredir)
+        if len(ApkNameList) == int(0):
+            Flag=0
 
-            print(ApkName + " --- [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "]")
-            print("starting unpack")
-            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )#+ " >/dev/null"
-            print("Unpacking Done !!")
+        if Flag != int(0):
+            ApkNameList.sort()
+            TargetApkPath = datastoredir+"/"
+            CurrentApk = 0
 
-            # UNPACK DIR LOCATION SET
-            UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
-            MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
-            try:
-                root = ET.parse(MainfestPath).getroot()
-                permissions = root.findall("uses-permission")
+            print(TargetApkPath)
+            print(ApkNameList)
+            print(TargetApkPath)
+            for ApkName in ApkNameList:
+                TargetApk = TargetApkPath + ApkName
 
-                print("SET STATUS :", end=' ')
-                for perm in permissions:
-                    for att in perm.attrib:
-                        permelement = perm.attrib[att]
+                print(ApkName + " --- [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "]")
+                print("starting unpack")
+                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )#+ " >/dev/null"
+                print("Unpacking Done !!")
 
-                        if permelement in permCollection:
-                            print("0", end=' ')
-                        else:
-                            print("1", end=' ')
-                            permCollection.add(permelement)
+                # UNPACK DIR LOCATION SET
+                UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
+                MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
+                try:
+                    root = ET.parse(MainfestPath).getroot()
+                    permissions = root.findall("uses-permission")
 
-            except FileNotFoundError:
-                print('Error')
-                print(TargetApk)
-                pass
-            sys("rm -f -R " + UnpackedDir)
-            print()
-            CurrentApk += 1
+                    print("SET STATUS :", end=' ')
+                    for perm in permissions:
+                        for att in perm.attrib:
+                            permelement = perm.attrib[att]
 
-        permList = list(permCollection)
+                            if permelement in permCollection:
+                                print("0", end=' ')
+                            else:
+                                print("1", end=' ')
+                                permCollection.add(permelement)
 
-        if TYPE == int(1):
-            with open("./PermList/UpdatePermList.txt", 'w') as file:
-                for i in permList:
-                    file.write(i + '\n')
-        elif TYPE == int(0):
+                except FileNotFoundError:
+                    print('Error')
+                    print(TargetApk)
+                    pass
+                sys("rm -f -R " + UnpackedDir)
+                print()
+                CurrentApk += 1
 
-            with open("./PermList/UpdatePermList2.txt", 'w') as file:
-                for i in permList:
-                    file.write(i + '\n')
+
+    permList = list(permCollection)
+
+
+    with open("./PermList/UpdatePermList.txt", 'w') as file:
+        for i in permList:
+            file.write(i + '\n')
+
+
+
+
 
 def Bagger(datastoredir):
     if datastoredir == "./MalwareAPK":
@@ -188,23 +180,19 @@ def Bagger(datastoredir):
             CurrentApk += 1
 
 
-
 def Main():
     sys("rm './PermList/UpdatePermList.txt' './PermList/UpdatePermList2.txt' './PermList/UpdatedPermList.txt'")
     sys("touch './PermList/UpdatePermList2.txt' && touch './PermList/UpdatePermList.txt' ")
     Malware_Directory_Name="./MalwareAPK"
     Benign_Directory_Name="./BenignAPK"
 
-    Extract(Benign_Directory_Name)
-    Extract(Malware_Directory_Name)
+    Extract()
 
     PermListUpdater()
     CSVFormatter()
 
     Bagger(Benign_Directory_Name)
     Bagger(Malware_Directory_Name)
-
-
 
 
 if __name__ == '__main__':
