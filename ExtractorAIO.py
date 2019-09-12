@@ -8,7 +8,6 @@ import csv
 
 
 def PermListUpdater():
-    #additionalPerm = []
     updateList = []
     defaultList = []
     with open('./PermList/UpdatePermList.txt') as updateFile:
@@ -69,19 +68,16 @@ def Extract():
             for ApkName in ApkNameList:
                 TargetApk = TargetApkPath + ApkName
 
-                print("("+str(apktype)+")"+ " [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "] --- "+ApkName)
+                print("("+str(apktype)+")"+ " [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "] --- "+ApkName,end="")
                
-                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )#+ " >/dev/null"
-                
-
-                # UNPACK DIR LOCATION SET
+                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )
                 UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
                 MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
                 try:
                     root = ET.parse(MainfestPath).getroot()
                     permissions = root.findall("uses-permission")
 
-                    print("SET STATUS :", end=' ')
+                    print("  SET STATUS :", end=' ')
                     for perm in permissions:
                         for att in perm.attrib:
                             permelement = perm.attrib[att]
@@ -115,13 +111,9 @@ def Bagger(datastoredir):
     elif datastoredir =="./BenignAPK":
         TYPE=0
         print("\n\t ** Extracting From Benign Samples ** \n\n")
-    permCollection = set()
-
     TimeStamp = str(time.time())
-    # print(TimeStamp)
     Flag=1
 
-    # JDAX LOCATION SET
     Jdax = "./Modules/jadx/bin/jadx"
     TargetApkPath = datastoredir+"/"
     ApkNameList = os.listdir(datastoredir)
@@ -132,7 +124,6 @@ def Bagger(datastoredir):
         ApkNameList.sort()
         TotalApks = len(ApkNameList)
         CurrentApk = 0
-        #get field names
         fieldnames=[]
         with open('data.csv') as csv_file:
             CSVREADER=csv.DictReader(csv_file)
@@ -146,10 +137,9 @@ def Bagger(datastoredir):
 
             print(">[" + str(CurrentApk + 1) + ' / ' + str(TotalApks) + "] --- "+ApkName ,end=' ')
             print("\t.",end=' ')
-            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null") #+ " >/dev/null"
+            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null")
             print(".",end=' ')
 
-            # UNPACK DIR LOCATION SET
             UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
             MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
 
@@ -159,8 +149,6 @@ def Bagger(datastoredir):
                 csv_master_dict=dict.fromkeys(fieldnames,0)
                 csv_master_dict['NAME']=ApkName
                 csv_master_dict['CLASS']=TYPE
-                # 1 for malware
-                # 0 for safe/ benign
                 for perm in permissions:
                     for att in perm.attrib:
                         permelement = perm.attrib[att]
@@ -179,7 +167,7 @@ def Bagger(datastoredir):
 
 def Main():
     sys("rm './PermList/UpdatePermList.txt' './PermList/UpdatePermList2.txt' './PermList/UpdatedPermList.txt'")
-    sys("touch './PermList/UpdatePermList2.txt' && touch './PermList/UpdatePermList.txt' ")
+    sys("rm -rf ./UnpackedApk/*")
     Malware_Directory_Name="./MalwareAPK"
     Benign_Directory_Name="./BenignAPK"
     sys("clear")
@@ -193,7 +181,10 @@ def Main():
     print("\n\nCreating Main Dataset\t[****]")
     Bagger(Benign_Directory_Name)
     Bagger(Malware_Directory_Name)
-    print("\n\n ***************DONE*****************  ")
+    print("\n## Cleaning Temp. Files")
+    sys("rm -rf ./UnpackedApk/*")
+    sys("rm './PermList/UpdatePermList.txt' './PermList/UpdatedPermList.txt'")
+    print("\n\n ***************DONE*****************  \nSaved as data.csv")
 
 
 if __name__ == '__main__':
