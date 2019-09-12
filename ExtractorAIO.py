@@ -49,11 +49,12 @@ def Extract():
 
 
     for datastoredir in DIRTYPE:
+        if datastoredir == "./MalwareAPK":
+            apktype="MALWARE"
+        else:
+            apktype="BENIGN"
         Flag=1
-        
         TimeStamp = str(time.time())
-        # print(TimeStamp)
-        # JDAX LOCATION SET
         Jdax = "./Modules/jadx/bin/jadx"
         TargetApkPath = datastoredir
         ApkNameList = os.listdir(datastoredir)
@@ -65,16 +66,13 @@ def Extract():
             TargetApkPath = datastoredir+"/"
             CurrentApk = 0
 
-            print(TargetApkPath)
-            print(ApkNameList)
-            print(TargetApkPath)
             for ApkName in ApkNameList:
                 TargetApk = TargetApkPath + ApkName
 
-                print(ApkName + " --- [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "]")
-                print("starting unpack")
+                print("("+str(apktype)+")"+ " [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "] --- "+ApkName)
+               
                 sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )#+ " >/dev/null"
-                print("Unpacking Done !!")
+                
 
                 # UNPACK DIR LOCATION SET
                 UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
@@ -110,16 +108,15 @@ def Extract():
         for i in permList:
             file.write(i + '\n')
 
-
-
-
-
 def Bagger(datastoredir):
     if datastoredir == "./MalwareAPK":
         TYPE=1
+        print("\n\t ** Extracting From Malware Samples ** \n\n")
     elif datastoredir =="./BenignAPK":
         TYPE=0
+        print("\n\t ** Extracting From Benign Samples ** \n\n")
     permCollection = set()
+
     TimeStamp = str(time.time())
     # print(TimeStamp)
     Flag=1
@@ -147,10 +144,10 @@ def Bagger(datastoredir):
         for ApkName in ApkNameList:
             TargetApk = TargetApkPath + ApkName
 
-            print(ApkName + " \n--- [" + str(CurrentApk + 1) + ' / ' + str(TotalApks) + "]",end=' ')
-            print("\tStarting unpack...",end=' ')
+            print(">[" + str(CurrentApk + 1) + ' / ' + str(TotalApks) + "] --- "+ApkName ,end=' ')
+            print("\t.",end=' ')
             sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null") #+ " >/dev/null"
-            print("\tUnpacking Done !!",end=' ')
+            print(".",end=' ')
 
             # UNPACK DIR LOCATION SET
             UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
@@ -169,11 +166,11 @@ def Bagger(datastoredir):
                         permelement = perm.attrib[att]
                         csv_master_dict[permelement]=1
                 sys("rm -f -R " + UnpackedDir)
-                print("\tUpdating dataset...", end=' ')
+                print(".", end=' ')
                 with open('data.csv', 'a') as csv_dump:
                     CSVwriter = csv.DictWriter(csv_dump, fieldnames=fieldnames)
                     CSVwriter.writerow(csv_master_dict)
-                print("\tDataset Updated.")
+                print(".")
             except Exception:
                 print("EERRRROORR")
                 pass
@@ -185,14 +182,18 @@ def Main():
     sys("touch './PermList/UpdatePermList2.txt' && touch './PermList/UpdatePermList.txt' ")
     Malware_Directory_Name="./MalwareAPK"
     Benign_Directory_Name="./BenignAPK"
-
+    sys("clear")
+    print("\tANDROID PERMISSION BASED DATASET CREATOR FOR ML MODELS \n\tGIT : https://github.com/Saket-Upadhyay/Android-Permission-Extraction-and-Dataset-Creation-with-Python\n\n")
+    print("Extracting Permissions\t[*---]")
     Extract()
-
+    print("\n\nCreating Base Permission List\t[**--]")
     PermListUpdater()
+    print("\n\nCreating Base Dataset\t[***-]")
     CSVFormatter()
-
+    print("\n\nCreating Main Dataset\t[****]")
     Bagger(Benign_Directory_Name)
     Bagger(Malware_Directory_Name)
+    print("\n\n ***************DONE*****************  ")
 
 
 if __name__ == '__main__':

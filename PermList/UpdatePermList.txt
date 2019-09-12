@@ -1,0 +1,9 @@
+android.permission.READ_PHONE_STATE
+android.permission.CALL_PHONE
+android.permission.ACCESS_COARSE_LOCATION
+android.permission.ACCESS_FINE_LOCATION
+android.permission.READ_EXTERNAL_STORAGE
+android.permission.BROADCAST_STICKY
+android.permission.INTERNET
+android.permission.WRITE_EXTERNAL_STORAGE
+android.permission.ACCESS_NETWORK_STATE
