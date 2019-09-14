@@ -1,3 +1,9 @@
+"""
+Author : Saket Upadhyay
+Android Permission Extraction and Database Creation
+
+14 Sept. 2019
+"""
 from os import system as sys
 import os, time
 import xml.etree.ElementTree as ET
@@ -7,6 +13,7 @@ import csv
 
 
 
+# FUNCTION TO MERGE FOUND PERMISSIONS TO DEFAULT PERMISSION LIST TO CREATE COMPRIHENSIVE PERMISSION LIST
 def PermListUpdater():
     updateList = []
     defaultList = []
@@ -26,6 +33,7 @@ def PermListUpdater():
             dumpFile.write(i+'\n')
 
 
+# FUNCTION TO CREATE .csv FILE TO STORE DATA FROM PERMISSION LIST SUPPLIED
 def CSVFormatter():
     test_file=open("./PermList/UpdatedPermList.txt")
     data=test_file.read()
@@ -34,27 +42,29 @@ def CSVFormatter():
     permlist=data.split('\n')
     permlist.pop()
 
-    csv_row_data=['NAME']
+    csv_row_data=['NAME']  #ADD NAME COLUMN
     csv_row_data += permlist
-    csv_row_data.append('CLASS')
+    csv_row_data.append('CLASS') # ADD PERMISSION COLUMN 
 
     with open('data.csv','w') as csv_file:
         writer=csv.writer(csv_file)
         writer.writerow(csv_row_data)
 
+
+#FUNCTION TO EXTRACT PERMISSIONS FROM APPLICATIONS TO CREATE A LIST
 def Extract():
     DIRTYPE=["./MalwareAPK","./BenignAPK"]
     permCollection = set()
 
 
     for datastoredir in DIRTYPE:
-        if datastoredir == "./MalwareAPK":
+        if datastoredir == "./MalwareAPK":         # FILTER APK TYPE TO AID IN LABEL GENERATION
             apktype="MALWARE"
         else:
             apktype="BENIGN"
         Flag=1
         TimeStamp = str(time.time())
-        Jdax = "./Modules/jadx/bin/jadx"
+        Jdax = "./Modules/jadx/bin/jadx" #JADX MODULE PATH
         TargetApkPath = datastoredir
         ApkNameList = os.listdir(datastoredir)
         if len(ApkNameList) == int(0):
@@ -70,14 +80,14 @@ def Extract():
 
                 print("("+str(apktype)+")"+ " [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "] --- "+ApkName,end="")
                
-                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )
+                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" ) # USE JADX TO EXTRACT FILES FROM APK AND MAINFEST.XML
                 UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
                 MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
                 try:
                     root = ET.parse(MainfestPath).getroot()
                     permissions = root.findall("uses-permission")
 
-                    print("  SET STATUS :", end=' ')
+                    print("  SET STATUS :", end=' ') # ADD NEW PERMISSION TO THE LIST
                     for perm in permissions:
                         for att in perm.attrib:
                             permelement = perm.attrib[att]
@@ -100,10 +110,12 @@ def Extract():
     permList = list(permCollection)
 
 
-    with open("./PermList/UpdatePermList.txt", 'w') as file:
+    with open("./PermList/UpdatePermList.txt", 'w') as file: # SAVE LIST IN FILE.
         for i in permList:
             file.write(i + '\n')
 
+
+#FUNCTION TO CREATE DATASET FROM EXISTING .csv FILE AND SUPPLIED APK FILES FOLDER.
 def Bagger(datastoredir):
     if datastoredir == "./MalwareAPK":
         TYPE=1
@@ -165,8 +177,10 @@ def Bagger(datastoredir):
             CurrentApk += 1
 
 
+
+# MAIN DRIVER FUNCTION 
 def Main():
-    sys("rm './PermList/UpdatePermList.txt' './PermList/UpdatePermList2.txt' './PermList/UpdatedPermList.txt'")
+    sys("rm './PermList/UpdatePermList.txt' './PermList/UpdatePermList2.txt' './PermList/UpdatedPermList.txt'")  # TO CLEAN THE STRUCTURE BEFORE STARTING
     sys("rm -rf ./UnpackedApk/*")
     Malware_Directory_Name="./MalwareAPK"
     Benign_Directory_Name="./BenignAPK"
