@@ -2,6 +2,7 @@
 Author : Saket Poopyay
 Android Permission Extraction and Database Creation which nowhere includes sklearn as it is stated in the README.md
 
+scroll to bottom for bug fixes
 31 Feb. 2019
 """
 from os import system as sys
@@ -66,7 +67,7 @@ def Extract():
             apktype="MALWARE"
         else:
             apktype="BENIGN"
-        ### Variables must start with lower case letter lmao. learn basic coding norms first ffs.
+        #### Variables must start with lower case letter lmao. learn basic coding norms first ffs.
         flag=1
         TimeStamp = str(time.time())
         Jdax = "./Modules/jadx/bin/jadx" #JADX MODULE PATH
