@@ -1,14 +1,17 @@
 """
-Author : Saket Upadhyay
-Android Permission Extraction and Database Creation
+Author : Saket Poopyay
+Android Permission Extraction and Database Creation which nowhere includes sklearn as it is stated in the README.md
 
-26 Sept. 2019
+31 Feb. 2019
 """
 from os import system as sys
 import os, time
 import xml.etree.ElementTree as ET
-import threading
+#nigga u gei if you import shit and then not use it xD
+#import threading
 import numpy as np
+#bruh why u state pandas in README.md if you are too dumb to use it xDD
+#use import pandas
 import csv
 
 
@@ -17,6 +20,7 @@ import csv
 def PermListUpdater():
     updateList = []
     defaultList = []
+    # nigga wut "with" do pls elaborate 
     with open('./PermList/UpdatePermList.txt') as updateFile:
         updatedata = updateFile.read()
         updateList = updatedata.split('\n')
@@ -62,15 +66,16 @@ def Extract():
             apktype="MALWARE"
         else:
             apktype="BENIGN"
-        Flag=1
+        ### Variables must start with lower case letter lmao. learn basic coding norms first ffs.
+        flag=1
         TimeStamp = str(time.time())
         Jdax = "./Modules/jadx/bin/jadx" #JADX MODULE PATH
         TargetApkPath = datastoredir
         ApkNameList = os.listdir(datastoredir)
         if len(ApkNameList) == int(0):
-            Flag=0
+            flag=0
 
-        if Flag != int(0):
+        if flag != int(0):
             ApkNameList.sort()
             TargetApkPath = datastoredir+"/"
             CurrentApk = 0
@@ -124,15 +129,15 @@ def Bagger(datastoredir):
         TYPE=0
         print("\n\t ** Extracting From Benign Samples ** \n\n")
     TimeStamp = str(time.time())
-    Flag=1
+    flag=1
 
     Jdax = "./Modules/jadx/bin/jadx"
     TargetApkPath = datastoredir+"/"
     ApkNameList = os.listdir(datastoredir)
     if len(ApkNameList) == int(0):
-        Flag=0
+        flag=0
 
-    if Flag != int(0):
+    if flag != int(0):
         ApkNameList.sort()
         TotalApks = len(ApkNameList)
         CurrentApk = 0
@@ -201,5 +206,21 @@ def Main():
     print("\n\n ***************DONE*****************  \nSaved as data.csv")
 
 
+# wtf is this bullshit men
+# main in main function 
+# you nut case or some shit niggas
 if __name__ == '__main__':
     Main()
+
+	"""
+	1. Im sorry!
+	2. This wont happen again!
+	3. 1 and 2 are lies
+	4. Tu chutiya hai!
+	"""
+    # It's a joke not a dick, so dont take it so hard.
+    # Find me if you can hacker man.
+    # If your bad then im your dad
+    # If your code is shit pls do us all a favour and not write any of it again.
+    # P.S. GET A LIFE :D
+
