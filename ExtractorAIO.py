@@ -7,7 +7,6 @@ Android Permission Extraction and Database Creation
 from os import system as sys
 import os, time
 import xml.etree.ElementTree as ET
-import threading
 import numpy as np
 import csv
 
