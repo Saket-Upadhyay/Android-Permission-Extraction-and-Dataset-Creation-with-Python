@@ -57,13 +57,13 @@ def Extract():
 
 
     for datastoredir in DIRTYPE:
-        if datastoredir == "./MalwareAPK":         # FILTER APK TYPE TO AID IN LABEL GENERATION
+        if datastoredir == "./MalwareAPK":          # FILTER APK TYPE TO AID IN LABEL GENERATION
             apktype="MALWARE"
         else:
             apktype="BENIGN"
         Flag=1
         TimeStamp = str(time.time())
-        Jdax = "./Modules/jadx/bin/jadx" #JADX MODULE PATH
+        Jdax = "./Modules/jadx/bin/jadx"            # JADX MODULE PATH
         TargetApkPath = datastoredir
         ApkNameList = os.listdir(datastoredir)
         if len(ApkNameList) == int(0):
@@ -79,14 +79,14 @@ def Extract():
 
                 print("("+str(apktype)+")"+ " [" + str(CurrentApk + 1) + ' / ' + str(len(ApkNameList)) + "] --- "+ApkName,end="")
                
-                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" ) # USE JADX TO EXTRACT FILES FROM APK AND MAINFEST.XML
+                sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk+ " >/dev/null" )        # USE JADX TO EXTRACT FILES FROM APK AND MAINFEST.XML
                 UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
                 MainfestPath = UnpackedDir + "/resources/AndroidManifest.xml"
                 try:
                     root = ET.parse(MainfestPath).getroot()
                     permissions = root.findall("uses-permission")
 
-                    print("  SET STATUS :", end=' ') # ADD NEW PERMISSION TO THE LIST
+                    print("  SET STATUS :", end=' ')        # ADD NEW PERMISSION TO THE LIST
                     for perm in permissions:
                         for att in perm.attrib:
                             permelement = perm.attrib[att]
@@ -109,7 +109,7 @@ def Extract():
     permList = list(permCollection)
 
 
-    with open("./PermList/UpdatePermList.txt", 'w') as file: # SAVE LIST IN FILE.
+    with open("./PermList/UpdatePermList.txt", 'w') as file:        # SAVE LIST IN FILE.
         for i in permList:
             file.write(i + '\n')
 
@@ -117,7 +117,7 @@ def Extract():
 #FUNCTION TO CREATE DATASET FROM EXISTING .csv FILE AND SUPPLIED APK FILES FOLDER.
 def Bagger(datastoredir):
     if datastoredir == "./MalwareAPK":
-        TYPE=1        # TYPE SET TO DIFFERENTIATE MALWARE AND BENIGN IN DATASET WITH LABELS
+        TYPE=1                        # TYPE SET TO DIFFERENTIATE MALWARE AND BENIGN IN DATASET WITH LABELS
         print("\n\t ** Extracting From Malware Samples ** \n\n")
     elif datastoredir =="./BenignAPK":
         TYPE=0
@@ -138,7 +138,7 @@ def Bagger(datastoredir):
         fieldnames=[]
         with open('data.csv') as csv_file:
             CSVREADER=csv.DictReader(csv_file)
-            fieldnames=CSVREADER.fieldnames # GET THE FIELD NAMES
+            fieldnames=CSVREADER.fieldnames     #GET THE FIELD NAMES
 
         csv_master_dict=dict.fromkeys(fieldnames,0)
 
@@ -148,7 +148,7 @@ def Bagger(datastoredir):
 
             print(">[" + str(CurrentApk + 1) + ' / ' + str(TotalApks) + "] --- "+ApkName ,end=' ')
             print("\t.",end=' ')
-            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null") # EXTRACT THE PERMISSIONS FROM THE APK FILES
+            sys(Jdax + " -d ./UnpackedApk/" + ApkName + TimeStamp + " " + TargetApk + " >/dev/null")        #EXTRACT THE PERMISSIONS FROM THE APK FILES
             print(".",end=' ')
 
             UnpackedDir = "./UnpackedApk/" + ApkName + TimeStamp
@@ -168,7 +168,7 @@ def Bagger(datastoredir):
                 print(".", end=' ')
                 with open('data.csv', 'a') as csv_dump:
                     CSVwriter = csv.DictWriter(csv_dump, fieldnames=fieldnames)
-                    CSVwriter.writerow(csv_master_dict)             # SAVE DATA TO DATASET ROW BY ROW FOR EACH APPLICATION
+                    CSVwriter.writerow(csv_master_dict)         # SAVE DATA TO DATASET ROW BY ROW FOR EACH APPLICATION
                 print(".")
             except Exception:
                 print("EERRRROORR")
