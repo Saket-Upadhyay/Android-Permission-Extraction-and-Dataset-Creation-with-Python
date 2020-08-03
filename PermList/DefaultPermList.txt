@@ -126,6 +126,7 @@ android.permission.DISABLE_KEYGUARD
 android.permission.DISPATCH_NFC_MESSAGE
 android.permission.DISPATCH_PROVISIONING_MESSAGE
 android.permission.DOWNLOAD_CACHE_NON_PURGEABLE
+android.permission.DOWNLOAD_WITHOUT_NOTIFICATION
 android.permission.DUMP
 android.permission.DVB_DEVICE
 android.permission.EXPAND_STATUS_BAR
