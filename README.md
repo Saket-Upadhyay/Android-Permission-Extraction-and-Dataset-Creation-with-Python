@@ -16,7 +16,7 @@ The script will do the rest.
 
 <h2>How to use generated data?</h2>
 The generated data will be in .csv format and can be parsed with the help of many prebuild libraries or modules.
->pandas module in python is suggested
+> pandas module in python is suggested
 
 <h3>Formatting</h3>
 The data is formatted in following way -
