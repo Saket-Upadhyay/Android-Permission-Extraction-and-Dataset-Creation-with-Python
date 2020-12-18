@@ -1,3 +1,7 @@
+> Update Note : This script works best in Linux, the binaries used for internal process like JADX is ELF, and the OS specific commands are for 'nix systems.
+> But it's also easy to run on windows, you might need to tweak ~10-15% of this code. If you do so and get this working on windows, I would really appreciate if you can share with everyone here, feel free to create a PR ^\_^.
+> I am planning to do it as many people are in windows env. and they are facing problems, but I will do it when I get time or a vacation from my current academics. :-)
+
 # Android Permission Extraction and Dataset Creation with Python
 
 
